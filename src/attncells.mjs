@@ -73,9 +73,18 @@ export function arrayDigest(a) {
   return sha256hex(`${DTYPE_TAG}|${a.length}|${bytes}`);
 }
 
-// sha256 over the canonical bytes of one scalar (for receipt commitments)
+// sha256 over the canonical bytes of one scalar (for receipt commitments).
+// Preimage = `${DTYPE_TAG}|8|${f64hex(x)}` — the same legible tagged-string form
+// arrayDigest uses ("8" = the byte width of one IEEE-754 double). NOT the v0.1.0
+// form, which hashed Buffer.from(hex,'hex').toString('latin1'): sha256hex hashes
+// UTF-8, so every canonical byte >= 0x80 re-encoded into TWO bytes — byte-exact
+// inside Node, but a different preimage than every other runtime's reading of
+// "sha256 over the canonical bytes", i.e. not portable at all. Reported and
+// root-caused in quilt-attention#1 (the same line shipped as lossShaOf in
+// quilt-nn); both repos now share this preimage, and the Python reference in
+// test/conformance.py pins it cross-runtime (test/scalar-fixture.json).
 export function scalarSha(x) {
-  return sha256hex(Buffer.from(f64hex(x), 'hex').toString('latin1'));
+  return sha256hex(`${DTYPE_TAG}|8|${f64hex(x)}`);
 }
 
 // ── seeded PRNG ──────────────────────────────────────────────────────────────────

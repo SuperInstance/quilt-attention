@@ -1,11 +1,11 @@
 {
   "name": "quilt-attention",
-  "version": "0.1.0",
+  "version": "0.1.1",
   "description": "One-head self-attention as a quilt cell DAG — hand-rolled backprop, epoch receipts, digest-localized faults.",
   "type": "module",
   "engines": { "node": ">=18" },
   "scripts": {
-    "test": "node --test test/att.test.mjs"
+    "test": "node --test test/*.test.mjs"
   },
   "license": "MIT"
 }

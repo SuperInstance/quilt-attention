@@ -1,0 +1,172 @@
+{
+  "spec": "scalarSha conformance fixture v1 (SuperInstance/quilt-attention#1)",
+  "preimage": "sha256(utf8('f64|8|' + f64hex(x))), f64hex = 8 big-endian IEEE-754 bytes as lowercase hex, -0 normalized to +0, non-finite rejected fail-closed",
+  "note": "text is parsed by each runtime with its own machinery (JS Number / Python float); f64hex pins the parse+encode result; the digest list in scalar-expected-digests.txt is the cross-runtime agreement of record",
+  "scalars": [
+    {
+      "name": "zero",
+      "text": "0",
+      "f64hex": "0000000000000000"
+    },
+    {
+      "name": "negzero",
+      "text": "-0",
+      "f64hex": "0000000000000000"
+    },
+    {
+      "name": "one",
+      "text": "1",
+      "f64hex": "3ff0000000000000"
+    },
+    {
+      "name": "one_point_zero",
+      "text": "1.0",
+      "f64hex": "3ff0000000000000"
+    },
+    {
+      "name": "negone",
+      "text": "-1",
+      "f64hex": "bff0000000000000"
+    },
+    {
+      "name": "half",
+      "text": "0.5",
+      "f64hex": "3fe0000000000000"
+    },
+    {
+      "name": "two",
+      "text": "2",
+      "f64hex": "4000000000000000"
+    },
+    {
+      "name": "pi",
+      "text": "3.141592653589793",
+      "f64hex": "400921fb54442d18"
+    },
+    {
+      "name": "e",
+      "text": "2.718281828459045",
+      "f64hex": "4005bf0a8b145769"
+    },
+    {
+      "name": "third",
+      "text": "0.3333333333333333",
+      "f64hex": "3fd5555555555555"
+    },
+    {
+      "name": "negthird",
+      "text": "-0.3333333333333333",
+      "f64hex": "bfd5555555555555"
+    },
+    {
+      "name": "two_thirds",
+      "text": "0.6666666666666666",
+      "f64hex": "3fe5555555555555"
+    },
+    {
+      "name": "tenth",
+      "text": "0.1",
+      "f64hex": "3fb999999999999a"
+    },
+    {
+      "name": "fifth",
+      "text": "0.2",
+      "f64hex": "3fc999999999999a"
+    },
+    {
+      "name": "tenth_x3",
+      "text": "0.30000000000000004",
+      "f64hex": "3fd3333333333334"
+    },
+    {
+      "name": "eps7",
+      "text": "1e-7",
+      "f64hex": "3e7ad7f29abcaf48"
+    },
+    {
+      "name": "neg_eps8",
+      "text": "-1.5e-8",
+      "f64hex": "be501b2b29a4692b"
+    },
+    {
+      "name": "eps300",
+      "text": "1e-300",
+      "f64hex": "01a56e1fc2f8f359"
+    },
+    {
+      "name": "min_denormal",
+      "text": "5e-324",
+      "f64hex": "0000000000000001"
+    },
+    {
+      "name": "neg_min_denormal",
+      "text": "-5e-324",
+      "f64hex": "8000000000000001"
+    },
+    {
+      "name": "min_normal",
+      "text": "2.2250738585072014e-308",
+      "f64hex": "0010000000000000"
+    },
+    {
+      "name": "max_double",
+      "text": "1.7976931348623157e308",
+      "f64hex": "7fefffffffffffff"
+    },
+    {
+      "name": "e15",
+      "text": "1e15",
+      "f64hex": "430c6bf526340000"
+    },
+    {
+      "name": "e21",
+      "text": "1e21",
+      "f64hex": "444b1ae4d6e2ef50"
+    },
+    {
+      "name": "pow53",
+      "text": "9007199254740992",
+      "f64hex": "4340000000000000"
+    },
+    {
+      "name": "pow53_plus1_as_float",
+      "text": "9007199254740993",
+      "f64hex": "4340000000000000"
+    },
+    {
+      "name": "pow53_plus2",
+      "text": "9007199254740994",
+      "f64hex": "4340000000000001"
+    },
+    {
+      "name": "kelvin",
+      "text": "-273.15",
+      "f64hex": "c071126666666666"
+    },
+    {
+      "name": "avogadro",
+      "text": "6.02214076e23",
+      "f64hex": "44dfe185ca57c517"
+    },
+    {
+      "name": "bigish",
+      "text": "123456.789",
+      "f64hex": "40fe240c9fbe76c9"
+    },
+    {
+      "name": "issue_loss",
+      "text": "1.3896947237443198",
+      "f64hex": "3ff63c3088de7d5f"
+    },
+    {
+      "name": "issue_loss_neg",
+      "text": "-1.3896947237443198",
+      "f64hex": "bff63c3088de7d5f"
+    }
+  ],
+  "nonfinite_must_throw": [
+    "NaN",
+    "Infinity",
+    "-Infinity"
+  ]
+}

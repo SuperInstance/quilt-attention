@@ -7,9 +7,10 @@
 //
 //   loss            the epoch's mean PRE-STEP loss measured along the pass (what the
 //                   gradients were taken at) — a plain JS number for humans
-//   loss_sha        sha256 over the canonical bytes of that number (8-byte BE IEEE-754)
+//   loss_sha        sha256 over the portable scalar preimage of that number:
+//                   "f64|8|<8-byte BE IEEE-754 hex>" (receipt format v2, quilt-attention#1)
 //   acc             post-epoch token accuracy over the whole dataset (see accuracy())
-//   acc_sha         sha256 over the canonical bytes of acc
+//   acc_sha         sha256 over the same portable scalar preimage of acc
 //   weight_root_sha sha256 over every weight's canonical bytes, in graph order
 //   prev / sha      the chain links; sha = sha256 of the canonical entry JSON
 //
@@ -128,6 +129,7 @@ export function verifyWhy(chain) {
   for (let i = 0; i < chain.length; i++) {
     const e = chain[i];
     if (typeof e !== 'object' || e === null) return { ok: false, at: i, reason: 'entry is not an object' };
+    if (e.v !== 2) return { ok: false, at: i, reason: `receipt format v${e.v} unsupported (v2 = portable scalar preimage "f64|8|<hex>"; v1 receipts predate the quilt-attention#1 preimage fix and verify only under the v0.1.0 code)` };
     if (e.seq !== i + 1) return { ok: false, at: i, reason: `seq is ${e.seq}, expected ${i + 1}` };
     if (!Number.isInteger(e.epoch) || e.epoch !== i) return { ok: false, at: i, reason: `epoch is ${e.epoch}, expected ${i} (epochs are contiguous from 0)` };
     if (typeof e.loss !== 'number' || !Number.isFinite(e.loss)) return { ok: false, at: i, reason: `loss ${e.loss} is not a finite number` };
@@ -201,7 +203,7 @@ export function train(netOrGraph, { data, epochs, lr, seed, mode = 'sgd' } = {})
     }
 
     const entry = {
-      v: 1,
+      v: 2,
       seq: epoch + 1,
       epoch,
       loss,

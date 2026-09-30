@@ -14,8 +14,9 @@ Conventions inherited from two fleet siblings (code written fresh, no shared sou
   perturbing a cell and diffing witness digests downstream.
   **Documented deviation:** cellgraph seals digests with BLAKE2b; Node's `node:crypto`
   exposes no blake2b, so this repo uses **sha256 with the dtype tag INSIDE the preimage**
-  (`"f64|<len>|<big-endian IEEE-754 bytes>",` see `arrayDigest`). Rule 2 of the
-  cellgraph digest discipline is preserved — the dtype is hashed, not assumed.
+  (`"f64|<len>|<big-endian IEEE-754 bytes>"` for arrays, `"f64|8|<bytes>"` for one
+  scalar — see `arrayDigest` / `scalarSha`). Rule 2 of the cellgraph digest discipline
+  is preserved — the dtype is hashed, not assumed.
 - **SuperInstance/quilt-nn** — the receipt discipline: every epoch of training seals one
   entry of a sha256-linked chain, `weight_root_sha` commits all parameters, `prev/sha`
   link the chain, and `verify(chain)` recomputes every link. Same honest limit quilt-nn
@@ -56,10 +57,16 @@ finite differences (test T3, worst rel err < 1e-4 — actually ~1e-10).
   sequences (first one pinned to a ramp), seed 7 everywhere.
 - SGD, one tick per sample over a seeded Fisher–Yates shuffle; the shuffle shares the
   init LCG stream, so the whole run is seed-only deterministic.
-- Per-epoch receipt: `{v, seq, epoch, loss, loss_sha, acc, acc_sha, weight_root_sha,
-  prev, sha}` — `loss` is the mean pre-step loss (what the gradients were taken at),
-  `acc` is the post-epoch per-token accuracy. `sha = sha256(canonical entry JSON)`.
-- `verify(chain)` / `verifyWhy(chain)` recompute seq, epoch, links, every commitment.
+- Per-epoch receipt (format **v2**): `{v, seq, epoch, loss, loss_sha, acc, acc_sha,
+  weight_root_sha, prev, sha}` — `loss` is the mean pre-step loss (what the gradients
+  were taken at), `acc` is the post-epoch per-token accuracy.
+  `loss_sha`/`acc_sha` = `sha256("f64|8|<big-endian IEEE-754 hex>")` — a legible tagged
+  STRING preimage, byte-identical to what an independent Python reading of the spec
+  hashes (v0.1.0 hashed a latin1-re-encoded buffer instead, which was not portable:
+  [quilt-attention#1](https://github.com/SuperInstance/quilt-attention/issues/1)).
+  `sha = sha256(canonical entry JSON)`.
+- `verify(chain)` / `verifyWhy(chain)` recompute seq, epoch, links, every commitment;
+  v1 receipts are rejected with a named reason.
 
 ## Fault localization (`src/localize.mjs`)
 
@@ -79,8 +86,9 @@ taught us:
 ## Run
 
 ```
-npm test          # node --test test/att.test.mjs — six tests
-node src/localize.mjs   # the localization battery, printed as a table
+npm test                    # node --test test/*.test.mjs — six battery tests + four conformance tests
+python3 test/conformance.py # the Python side of the cross-runtime scalar digest pair (stdlib only)
+node src/localize.mjs       # the localization battery, printed as a table
 ```
 
-See `TEST-RECEIPT.md` for the actual recorded numbers of the v0.1.0 run.
+See `TEST-RECEIPT.md` for the actual recorded numbers of the v0.1.1 run.
